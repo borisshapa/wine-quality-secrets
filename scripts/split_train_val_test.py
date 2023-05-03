@@ -43,12 +43,12 @@ def write_to_csv(data: list[list[str]], filename: str):
 def main(args: argparse.Namespace):
     data = []
     header = []
-    for file_name in args.data:
+    for ind, file_name in enumerate(args.data):
         with open(file_name, "r", encoding="utf-8") as file:
             csv_reader = csv.reader(file, delimiter=";")
             header = next(csv_reader)
             for line in csv_reader:
-                data.append(line)
+                data.append([str(ind)] + line)
 
     random.shuffle(data)
     val_size = int(len(data) * args.val_ratio)
@@ -60,6 +60,8 @@ def main(args: argparse.Namespace):
         "test": data[val_size:train_offset],
         "train": data[train_offset:],
     }
+
+    header = ["wine type"] + header
 
     dirname = os.path.dirname(args.data[-1])
     for group_name, data in partition.items():
