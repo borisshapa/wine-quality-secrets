@@ -1,7 +1,9 @@
 import argparse
-import csv
 import os.path
-import random
+
+import pandas as pd
+
+from src import utils
 
 
 def _configure_argparser() -> argparse.ArgumentParser:
@@ -34,41 +36,27 @@ def _configure_argparser() -> argparse.ArgumentParser:
     return argparser
 
 
-def write_to_csv(data: list[list[str]], filename: str):
-    with open(filename, "w", encoding="utf-8") as file:
-        csv_writer = csv.writer(file, delimiter=";")
-        csv_writer.writerows(data)
-
-
 def main(args: argparse.Namespace):
-    data = []
-    header = []
-    for ind, file_name in enumerate(args.data):
-        with open(file_name, "r", encoding="utf-8") as file:
-            csv_reader = csv.reader(file, delimiter=";")
-            header = next(csv_reader)
-            for line in csv_reader:
-                data.append([str(ind)] + line)
+    dataframes = []
 
-    random.shuffle(data)
-    val_size = int(len(data) * args.val_ratio)
-    test_size = int(len(data) * args.test_ratio)
+    for ind, filename in enumerate(args.data):
+        dataframe = pd.read_csv(filename, sep=utils.CSV_SEPARATOR)
+        dataframe.insert(
+            0, utils.WINE_TYPE_COLUMN_NAME, [ind] * dataframe.shape[0]
+        )
+        dataframes.append(dataframe)
 
-    train_offset = val_size + test_size
-    partition = {
-        "val": data[:val_size],
-        "test": data[val_size:train_offset],
-        "train": data[train_offset:],
-    }
+    data = pd.concat(dataframes, ignore_index=True)
+    shuffled_data = data.sample(frac=1, ignore_index=True)
 
-    header = ["wine type"] + header
+    partition = utils.split_into_train_val_test(
+        shuffled_data, args.val_ratio, args.test_ratio, args.seed
+    )
 
     dirname = os.path.dirname(args.data[-1])
     for group_name, data in partition.items():
-        data_with_header = [header] + data
-        write_to_csv(
-            data_with_header, os.path.join(dirname, f"{group_name}.csv")
-        )
+        filename = os.path.join(dirname, f"{group_name}.csv")
+        data.to_csv(filename, sep=utils.CSV_SEPARATOR, index=False)
 
 
 if __name__ == "__main__":
