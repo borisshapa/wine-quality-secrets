@@ -11,7 +11,10 @@ CSV_SEPARATOR = ";"
 
 
 def split_into_train_val_test(
-    data: pd.DataFrame, val_ratio: float, test_ratio: float, seed: int
+    data: pd.DataFrame,
+    val_ratio: float,
+    test_ratio: float,
+    seed: int | None = None,
 ) -> dict[str, pd.DataFrame]:
     train, test = model_selection.train_test_split(
         data, test_size=test_ratio, random_state=seed
@@ -37,7 +40,7 @@ def set_deterministic_mode(seed: int):
     os.environ["PYTHONHASHSEED"] = str(seed)
 
 
-def split_into_x_y(data: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+def split_into_x_y(data: pd.DataFrame) -> tuple[pd.DataFrame, pd.Series]:
     x = data.iloc[:, 0:-1]
     y = data.iloc[:, -1]
     return x, y
