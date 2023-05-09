@@ -27,8 +27,11 @@ def _configure_parser() -> argparse.ArgumentParser:
 
 def main(args: argparse.Namespace):
     model = catboost.CatBoostClassifier()
+
+    loguru.logger.info("Loading model from {}", args.model)
     model.load_model(args.model)
 
+    loguru.logger.info("Loading data from {}", args.test_data)
     data = pd.read_csv(args.test_data, sep=";")
     features, labels = utils.split_into_x_y(data)
     predictions = model.predict(features)

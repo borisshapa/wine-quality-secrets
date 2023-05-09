@@ -3,6 +3,7 @@ import datetime
 import os.path
 
 import catboost
+import loguru
 import omegaconf
 import pandas as pd
 import wandb
@@ -19,6 +20,7 @@ def _configure_arg_parser() -> argparse.ArgumentParser:
 
 def main(args: argparse.Namespace):
     yaml_config = omegaconf.OmegaConf.load(args.config)
+    loguru.logger.info("Set random seed: {}", yaml_config["seed"])
 
     utils.set_deterministic_mode(yaml_config["seed"])
     data_config = yaml_config["data"]
@@ -30,15 +32,17 @@ def main(args: argparse.Namespace):
             config=omegaconf.OmegaConf.to_container(model_config, resolve=True),
         )
 
+    loguru.logger.info("Loading train data from {}", data_config["train_data"])
     train_data = pd.read_csv(data_config["train_data"], sep=utils.CSV_SEPARATOR)
+
+    loguru.logger.info("Loading val data from {}", data_config["val_data"])
     val_data = pd.read_csv(data_config["val_data"], sep=utils.CSV_SEPARATOR)
 
     x_train, y_train = utils.split_into_x_y(train_data)
     x_val, y_val = utils.split_into_x_y(val_data)
 
-    train_dir = os.path.join(
-        args.experiments_dir, utils.get_current_time()
-    )
+    train_dir = os.path.join(args.experiments_dir, utils.get_current_time())
+    loguru.logger.info("Training... | train dir: {}", train_dir)
 
     model = catboost.CatBoostClassifier(
         loss_function="MultiClass",
@@ -65,7 +69,9 @@ def main(args: argparse.Namespace):
         plot=False,
     )
 
-    model.save_model(os.path.join(train_dir, "model.cbm"))
+    save_to = os.path.join(train_dir, "model.cbm")
+    loguru.logger.info("Saving model into {}", save_to)
+    model.save_model(save_to)
 
 
 if __name__ == "__main__":

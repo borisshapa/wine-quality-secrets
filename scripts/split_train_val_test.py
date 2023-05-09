@@ -1,6 +1,7 @@
 import argparse
 import os.path
 
+import loguru
 import pandas as pd
 
 from src import utils
@@ -40,6 +41,8 @@ def main(args: argparse.Namespace):
     dataframes = []
 
     for ind, filename in enumerate(args.data):
+        loguru.logger.info("Reading file {} | wine type: {}", filename, ind)
+
         dataframe = pd.read_csv(filename, sep=utils.CSV_SEPARATOR)
         dataframe.insert(
             0, utils.WINE_TYPE_COLUMN_NAME, [ind] * dataframe.shape[0]
@@ -56,6 +59,12 @@ def main(args: argparse.Namespace):
     dirname = os.path.dirname(args.data[-1])
     for group_name, data in partition.items():
         filename = os.path.join(dirname, f"{group_name}.csv")
+        loguru.logger.info(
+            "Saving {} into {} | dataset size: {}",
+            group_name,
+            filename,
+            len(data.index),
+        )
         data.to_csv(filename, sep=utils.CSV_SEPARATOR, index=False)
 
 
