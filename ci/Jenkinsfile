@@ -27,10 +27,14 @@ pipeline {
             }
         }
         stage("Build and run docker container") {
-            try {
-                sh "docker-compose build"
-            } finally {
-                sh "docker-compose ip -d"
+            steps {
+                script{
+                    try {
+                        sh "docker-compose build"
+                    } finally {
+                        sh "docker-compose ip -d"
+                    }
+                }
             }
         }
     }
