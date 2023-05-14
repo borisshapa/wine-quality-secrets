@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CREDS=credentials("wine-quality")
+        DOCKERHUB_CREDS=credentials("borisshapa-docker-hub")
         LC_ALL = "en_US.UTF-8"
         LANG = "en_US.UTF-8"
         LANGUAGE = "en_US.UTF-8"
@@ -18,24 +18,40 @@ pipeline {
             steps {
                 cleanWs()
                 sh "git clone -b master https://github.com/borisshapa/wine-quality"
-                sh "cd wine-quality"
             }
         }
         stage("Login") {
             steps {
-                sh "docker login -u %DOCKERHUB_CREDS_USR% -p %DOCKERHUB_CREDS_PSW%"
+                sh "docker login -u $DOCKERHUB_CREDS_USR -p $DOCKERHUB_CREDS_PSW"
             }
         }
         stage("Build and run docker container") {
             steps {
                 script{
                     try {
-                        sh "docker-compose build"
+                        sh "cd wine-quality && docker compose build"
                     } finally {
-                        sh "docker-compose ip -d"
+                        sh "cd wine-quality && docker compose up -d"
                     }
                 }
             }
+        }
+        stage("Checkout coverage report") {
+            steps {
+                dir("wine-quality") {
+                    sh "docker compose logs -t --tail 10"
+                }
+            }
+        }
+        stage("Push") {
+            steps {
+                sh "docker push borisshapa/wine-quality:latest"
+            }
+        }
+    }
+    post {
+        always {
+            sh "docker logout"
         }
     }
 }
