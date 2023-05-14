@@ -26,7 +26,11 @@ def main(args: argparse.Namespace):
     data_config = yaml_config["data"]
     model_config = yaml_config["model"]
 
-    if model_config["task_type"] == "CPU":
+    if (
+        model_config["task_type"] == "CPU"
+        and "wandb" in yaml_config
+        and yaml_config["wandb"] is not None
+    ):
         wandb.init(
             project=yaml_config["wandb"],
             config=omegaconf.OmegaConf.to_container(model_config, resolve=True),
