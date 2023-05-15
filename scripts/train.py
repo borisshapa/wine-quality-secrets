@@ -1,5 +1,4 @@
 import argparse
-import datetime
 import os.path
 
 import catboost
@@ -15,6 +14,7 @@ def _configure_arg_parser() -> argparse.ArgumentParser:
     argparser = argparse.ArgumentParser()
     argparser.add_argument("--config", type=str, default="configs/default.yaml")
     argparser.add_argument("--experiments-dir", type=str, default="experiments")
+    argparser.add_argument("--save-to", type=str, default="latest")
     return argparser
 
 
@@ -26,7 +26,13 @@ def main(args: argparse.Namespace):
     data_config = yaml_config["data"]
     model_config = yaml_config["model"]
 
-    if model_config["task_type"] == "CPU":
+    use_wandb = (
+        model_config["task_type"] == "CPU"
+        and "wandb" in yaml_config
+        and yaml_config["wandb"] is not None
+    )
+
+    if use_wandb:
         wandb.init(
             project=yaml_config["wandb"],
             config=omegaconf.OmegaConf.to_container(model_config, resolve=True),
@@ -41,7 +47,9 @@ def main(args: argparse.Namespace):
     x_train, y_train = utils.split_into_x_y(train_data)
     x_val, y_val = utils.split_into_x_y(val_data)
 
-    train_dir = os.path.join(args.experiments_dir, utils.get_current_time())
+    train_dir = os.path.join(
+        args.experiments_dir, args.save_to or utils.get_current_time()
+    )
     loguru.logger.info("Training... | train dir: {}", train_dir)
 
     model = catboost.CatBoostClassifier(
@@ -55,7 +63,7 @@ def main(args: argparse.Namespace):
     verbose = True
     _callbacks = None
 
-    if model_config["task_type"] == "CPU":
+    if use_wandb:
         verbose = False
         _callbacks = [callbacks.WAndBCallback(model_config["iterations"])]
 

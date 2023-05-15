@@ -1,5 +1,5 @@
 seed: 21
-wandb: "wine-quality"
+wandb: ~
 
 data:
   train_data: data/train.csv
