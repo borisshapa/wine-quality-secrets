@@ -1,5 +1,4 @@
 import argparse
-import datetime
 import os.path
 
 import catboost
@@ -15,6 +14,7 @@ def _configure_arg_parser() -> argparse.ArgumentParser:
     argparser = argparse.ArgumentParser()
     argparser.add_argument("--config", type=str, default="configs/default.yaml")
     argparser.add_argument("--experiments-dir", type=str, default="experiments")
+    argparser.add_argument("--save-to", type=str, default="latest")
     return argparser
 
 
@@ -47,7 +47,9 @@ def main(args: argparse.Namespace):
     x_train, y_train = utils.split_into_x_y(train_data)
     x_val, y_val = utils.split_into_x_y(val_data)
 
-    train_dir = os.path.join(args.experiments_dir, utils.get_current_time())
+    train_dir = os.path.join(
+        args.experiments_dir, args.save_to or utils.get_current_time()
+    )
     loguru.logger.info("Training... | train dir: {}", train_dir)
 
     model = catboost.CatBoostClassifier(
