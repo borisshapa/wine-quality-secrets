@@ -17,7 +17,7 @@ pipeline {
         stage("Clone github repository") {
             steps {
                 cleanWs()
-                sh "git clone -b master https://github.com/borisshapa/wine-quality"
+                sh "git clone -b dev https://github.com/borisshapa/wine-quality"
             }
         }
         stage("Login") {
@@ -43,8 +43,12 @@ pipeline {
                 dir("wine-quality") {
                     script {
                         try {
-                            timeout(30) {
+                            timeout(10) {
                                 sh "docker compose up -d"
+                                waitUntil {
+                                    "exited" == sh(returnStdout: true,
+                                    script: "docker inspect wine-quality-web-1 --format=\"{{ .State.Status }}\"").trim()
+                                }
                             }
                         } finally {
                             sh "docker compose logs -t --tail 10"
