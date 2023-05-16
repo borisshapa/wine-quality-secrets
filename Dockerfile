@@ -6,6 +6,8 @@ WORKDIR /app
 
 COPY requirements.txt /app
 
-RUN pip install -r requirements.txt
+ADD . /app
 
-#ENTRYPOINT ["bash"]
+RUN rm .cache/pip -rf
+
+RUN pip install -r requirements.txt
