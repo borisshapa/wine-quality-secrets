@@ -13,7 +13,7 @@ def _configure_parser() -> argparse.ArgumentParser:
     argparser.add_argument(
         "--model",
         type=str,
-        default="experiments/09_05_23_13:09:30/model.cbm",
+        default="experiments/latest/model.cbm",
         help="Catboost model in binary file.",
     )
     argparser.add_argument(
