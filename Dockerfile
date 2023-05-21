@@ -8,6 +8,4 @@ COPY requirements.txt /app
 
 ADD . /app
 
-RUN rm .cache/pip -rf
-
 RUN pip install -r requirements.txt
