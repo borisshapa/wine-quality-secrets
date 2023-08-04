@@ -17,8 +17,7 @@ pipeline {
         stage("Clone github repository") {
             steps {
                 cleanWs()
-                sh 'printenv'
-//                 sh "git clone -b master https://github.com/borisshapa/wine-quality"
+                sh "git clone -b $GIT_BRANCH https://github.com/borisshapa/wine-quality"
             }
         }
         stage("Login") {
@@ -43,6 +42,7 @@ pipeline {
             steps {
                 dir("wine-quality") {
                     script {
+                        sh "docker compose logs -t --tail 10 web"
                         try {
                             timeout(10) {
                                 sh "docker compose up -d"
