@@ -25,14 +25,14 @@ def _configure_parser() -> argparse.ArgumentParser:
     return argparser
 
 
-def main(args: argparse.Namespace):
+def main(model: str, test_data: str):
     model = catboost.CatBoostClassifier()
 
-    loguru.logger.info("Loading model from {}", args.model)
-    model.load_model(args.model)
+    loguru.logger.info("Loading model from {}", model)
+    model.load_model(model)
 
-    loguru.logger.info("Loading data from {}", args.test_data)
-    data = pd.read_csv(args.test_data, sep=";")
+    loguru.logger.info("Loading data from {}", test_data)
+    data = pd.read_csv(test_data, sep=";")
     features, labels = utils.split_into_x_y(data)
     predictions = model.predict(features)
 
@@ -43,5 +43,5 @@ def main(args: argparse.Namespace):
 
 
 if __name__ == "__main__":
-    _args = _configure_parser().parse_args()
-    main(_args)
+    args = _configure_parser().parse_args()
+    main(**vars(args))

@@ -37,26 +37,24 @@ def _configure_argparser() -> argparse.ArgumentParser:
     return argparser
 
 
-def main(args: argparse.Namespace):
+def main(data: str, val_ratio: float, test_ratio: float, seed: int):
     dataframes = []
 
-    for ind, filename in enumerate(args.data):
+    for ind, filename in enumerate(data):
         loguru.logger.info("Reading file {} | wine type: {}", filename, ind)
 
         dataframe = pd.read_csv(filename, sep=utils.CSV_SEPARATOR)
-        dataframe.insert(
-            0, utils.WINE_TYPE_COLUMN_NAME, [ind] * dataframe.shape[0]
-        )
+        dataframe.insert(0, utils.WINE_TYPE_COLUMN_NAME, [ind] * dataframe.shape[0])
         dataframes.append(dataframe)
 
     data = pd.concat(dataframes, ignore_index=True)
     shuffled_data = data.sample(frac=1, ignore_index=True)
 
     partition = utils.split_into_train_val_test(
-        shuffled_data, args.val_ratio, args.test_ratio, args.seed
+        shuffled_data, val_ratio, test_ratio, seed
     )
 
-    dirname = os.path.dirname(args.data[-1])
+    dirname = os.path.dirname(data[-1])
     for group_name, data in partition.items():
         filename = os.path.join(dirname, f"{group_name}.csv")
         loguru.logger.info(
@@ -69,5 +67,5 @@ def main(args: argparse.Namespace):
 
 
 if __name__ == "__main__":
-    _args = _configure_argparser().parse_args()
-    main(_args)
+    args = _configure_argparser().parse_args()
+    main(**vars(args))

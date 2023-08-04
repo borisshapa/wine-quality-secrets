@@ -12,3 +12,7 @@ model:
   depth: 10
   l2_leaf_reg: 3
   task_type: "CPU"
+
+experiments:
+  dir: "experiments"
+  save_to: "latest"

@@ -2,6 +2,7 @@ import datetime
 import os
 import random
 
+import loguru
 import numpy as np
 import pandas as pd
 from sklearn import model_selection
@@ -35,6 +36,8 @@ def set_deterministic_mode(seed: int):
     """Fixes the seed for all random processes
     (for pure python, numpy).
     """
+    loguru.logger.info("Set random seed: {}", seed)
+
     random.seed(seed)
     np.random.seed(seed)
     os.environ["PYTHONHASHSEED"] = str(seed)

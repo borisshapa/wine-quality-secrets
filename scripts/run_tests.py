@@ -23,17 +23,17 @@ def _configure_argparser() -> argparse.ArgumentParser:
     return argparser
 
 
-def main(args: argparse.Namespace):
+def main(model: str, tests_dir: str):
     model = catboost.CatBoostClassifier()
 
-    loguru.logger.info("Loading model from {}", args.model)
-    model.load_model(args.model)
+    loguru.logger.info("Loading model from {}", model)
+    model.load_model(model)
 
     total = 0
     success = 0
 
-    for f in os.listdir(args.tests_dir):
-        full_path = os.path.join(args.tests_dir, f)
+    for f in os.listdir(tests_dir):
+        full_path = os.path.join(tests_dir, f)
         if os.path.isfile(full_path):
             loguru.logger.info("Running tests from {}", f)
             with open(full_path, "r", encoding="utf-8") as json_file:
@@ -61,5 +61,5 @@ def main(args: argparse.Namespace):
 
 
 if __name__ == "__main__":
-    _args = _configure_argparser().parse_args()
-    main(_args)
+    args = _configure_argparser().parse_args()
+    main(**vars(args))
