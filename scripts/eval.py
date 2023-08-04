@@ -26,15 +26,15 @@ def _configure_parser() -> argparse.ArgumentParser:
 
 
 def main(model: str, test_data: str):
-    model = catboost.CatBoostClassifier()
+    classifier = catboost.CatBoostClassifier()
 
     loguru.logger.info("Loading model from {}", model)
-    model.load_model(model)
+    classifier.load_model(model)
 
     loguru.logger.info("Loading data from {}", test_data)
     data = pd.read_csv(test_data, sep=";")
     features, labels = utils.split_into_x_y(data)
-    predictions = model.predict(features)
+    predictions = classifier.predict(features)
 
     f1_micro = metrics.f1_score(predictions, labels, average="micro")
     accuracy = metrics.accuracy_score(predictions, labels)

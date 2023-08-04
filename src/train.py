@@ -9,7 +9,7 @@ import wandb
 from src import utils, callbacks, configs
 
 
-def main(config: configs.Config):
+def train(config: configs.Config):
     utils.set_deterministic_mode(config.seed)
     data_config = config.data_config
     model_config = config.model_config

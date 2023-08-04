@@ -3,7 +3,7 @@ services:
   web:
     build: .
     command: bash -c "python -m scripts.split_train_val_test &&
-         python -m scripts.train && 
+         python -m scripts.train --config_path=configs/default.yaml && 
          python -m scripts.eval && 
          coverage run -m src.unit_tests.test_preprocess && 
          coverage report -m"

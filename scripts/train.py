@@ -7,5 +7,6 @@ from src import configs, train
 def main(config: configs.Config):
     train.train(config)
 
+
 if __name__ == "__main__":
     main()

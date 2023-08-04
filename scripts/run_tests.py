@@ -24,10 +24,10 @@ def _configure_argparser() -> argparse.ArgumentParser:
 
 
 def main(model: str, tests_dir: str):
-    model = catboost.CatBoostClassifier()
+    classifier = catboost.CatBoostClassifier()
 
     loguru.logger.info("Loading model from {}", model)
-    model.load_model(model)
+    classifier.load_model(model)
 
     total = 0
     success = 0
@@ -42,7 +42,7 @@ def main(model: str, tests_dir: str):
                 features = [list(id2value.values()) for id2value in tests["X"]]
                 targets = [list(id2value.values()) for id2value in tests["y"]]
 
-                predictions = model.predict(features)
+                predictions = classifier.predict(features)
 
                 for i in range(len(features)):
                     loguru.logger.info("TEST {} | features: {}", i, features[i])

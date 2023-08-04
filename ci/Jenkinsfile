@@ -17,7 +17,8 @@ pipeline {
         stage("Clone github repository") {
             steps {
                 cleanWs()
-                sh "git clone -b master https://github.com/borisshapa/wine-quality"
+                sh 'printenv'
+//                 sh "git clone -b master https://github.com/borisshapa/wine-quality"
             }
         }
         stage("Login") {
