@@ -6,11 +6,9 @@ from typing import Optional
 class ModelConfig:
     """CatBoost hyperparameters."""
 
-    iterations: int = dataclasses.field(default=1000)
+    n_estimators: int = dataclasses.field(default=100)
     learning_rate: float = dataclasses.field(default=0.1)
-    depth: int = dataclasses.field(default=10)
-    l2_leaf_reg: int = dataclasses.field(default=3)
-    task_type: str = dataclasses.field(default="CPU")
+    max_depth: int = dataclasses.field(default=3)
 
 
 @dataclasses.dataclass
@@ -29,9 +27,8 @@ class ExperimentsConfig:
 @dataclasses.dataclass
 class Config:
     seed: int = dataclasses.field(default=21)
-    wandb: Optional[str] = dataclasses.field(default=None)
-    data_config: DataConfig = dataclasses.field(default_factory=DataConfig)
-    model_config: ModelConfig = dataclasses.field(default_factory=ModelConfig)
-    experiments_config: ExperimentsConfig = dataclasses.field(
+    data: DataConfig = dataclasses.field(default_factory=DataConfig)
+    model: ModelConfig = dataclasses.field(default_factory=ModelConfig)
+    experiments: ExperimentsConfig = dataclasses.field(
         default_factory=ExperimentsConfig
     )

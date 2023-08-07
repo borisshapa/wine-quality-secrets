@@ -1,8 +1,7 @@
 import argparse
+import pickle
 
-import catboost
 import loguru
-import pandas as pd
 from sklearn import metrics
 
 from src import utils
@@ -13,7 +12,7 @@ def _configure_parser() -> argparse.ArgumentParser:
     argparser.add_argument(
         "--model",
         type=str,
-        default="experiments/latest/model.cbm",
+        default="experiments/latest/model.sklrn",
         help="Catboost model in binary file.",
     )
     argparser.add_argument(
@@ -26,18 +25,17 @@ def _configure_parser() -> argparse.ArgumentParser:
 
 
 def main(model: str, test_data: str):
-    classifier = catboost.CatBoostClassifier()
-
     loguru.logger.info("Loading model from {}", model)
-    classifier.load_model(model)
+
+    with open(model, "rb") as model_file:
+        classifier = pickle.load(model_file)
 
     loguru.logger.info("Loading data from {}", test_data)
-    data = pd.read_csv(test_data, sep=";")
-    features, labels = utils.split_into_x_y(data)
-    predictions = classifier.predict(features)
+    x, y, _ = utils.load_data_from_csv(test_data, sep=utils.CSV_SEPARATOR)
+    preds = classifier.predict(x)
 
-    f1_micro = metrics.f1_score(predictions, labels, average="micro")
-    accuracy = metrics.accuracy_score(predictions, labels)
+    f1_micro = metrics.f1_score(y, preds, average="micro")
+    accuracy = metrics.accuracy_score(y, preds)
 
     loguru.logger.info(f"\nF1 micro: {f1_micro}\nAccuracy: {accuracy}")
 

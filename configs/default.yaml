@@ -1,5 +1,4 @@
 seed: 21
-wandb: ~
 
 data:
   train_data: data/train.csv
@@ -7,11 +6,9 @@ data:
   cat_features_indices: [0]
 
 model:
-  iterations: 1000
+  n_estimators: 100
   learning_rate: 0.1
-  depth: 10
-  l2_leaf_reg: 3
-  task_type: "CPU"
+  max_depth: 1
 
 experiments:
   dir: "experiments"
