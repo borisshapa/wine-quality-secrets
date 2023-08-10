@@ -46,7 +46,7 @@ def main(data: list[str], val_ratio: float, test_ratio: float, seed: int):
         loguru.logger.info("Reading file {} | wine type: {}", filename, ind)
 
         x, y, header = utils.load_data_from_csv(filename, sep=utils.CSV_SEPARATOR)
-        type_column = [ind] * len(y)
+        type_column = np.repeat(np.float32(ind), len(y))
         _x.append(np.column_stack((type_column, x)))
         _y.append(y)
 

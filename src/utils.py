@@ -2,11 +2,11 @@ import csv
 import datetime
 import os
 import random
+from typing import Any
 
 import loguru
 import numpy as np
 from numpy import typing as npt
-from sklearn import model_selection
 
 WINE_TYPE_COLUMN_NAME = "wine type"
 CSV_SEPARATOR = ";"
@@ -72,7 +72,7 @@ def load_data_from_csv(
 
 def save_csv(header: list[str], x: Features, y: Target, filename: str, sep: str):
     with open(filename, "w") as csvfile:
-        csvwriter = csv.writer(csvfile, delimiter=sep)
+        csvwriter = csv.writer(csvfile, delimiter=sep, lineterminator="\n")
         csvwriter.writerow(header)
         for i in range(len(y)):
             row = x[i].astype(str).tolist() + [str(y[i])]
@@ -92,3 +92,7 @@ def set_deterministic_mode(seed: int):
 
 def get_current_time() -> str:
     return datetime.datetime.now().strftime("%d_%m_%y_%H:%M:%S")
+
+
+def get_condition_str(condition: dict[str, Any]):
+    return " AND ".join([f"[{key}]={value}" for key, value in condition.items()])
