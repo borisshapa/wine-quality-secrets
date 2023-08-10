@@ -10,7 +10,6 @@ ENV SA_PASSWORD=${PASSWORD}
 ENV USER_ID=${USER_ID}
 
 COPY db/ /
-COPY data/ data/
 
 RUN chmod +x /import_data.sh
 
