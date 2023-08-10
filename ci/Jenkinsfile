@@ -18,7 +18,6 @@ pipeline {
         stage("Clone github repository") {
             steps {
                 cleanWs()
-                sh "g"
                 sh "git clone -b $GIT_BRANCH https://${GITHUB_ACCESS_TOKEN}@github.com/borisshapa/wine-quality"
             }
         }
