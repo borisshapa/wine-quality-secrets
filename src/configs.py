@@ -6,18 +6,22 @@ from typing import Optional
 class ModelConfig:
     """CatBoost hyperparameters."""
 
-    iterations: int = dataclasses.field(default=1000)
+    n_estimators: int = dataclasses.field(default=100)
     learning_rate: float = dataclasses.field(default=0.1)
-    depth: int = dataclasses.field(default=10)
-    l2_leaf_reg: int = dataclasses.field(default=3)
-    task_type: str = dataclasses.field(default="CPU")
+    max_depth: int = dataclasses.field(default=3)
 
 
 @dataclasses.dataclass
 class DataConfig:
     train_data: str = dataclasses.field(default="data/train.csv")
     val_data: str = dataclasses.field(default="data/val.csv")
-    cat_features_indices: list[int] = dataclasses.field(default_factory=lambda: [0])
+
+
+@dataclasses.dataclass
+class DbConfig:
+    mssql_creds: str = dataclasses.field(default="mssql-creds.yml")
+    data_table: str = dataclasses.field(default="Wines")
+    metrics_table: str = dataclasses.field(default="Metrics")
 
 
 @dataclasses.dataclass
@@ -29,9 +33,18 @@ class ExperimentsConfig:
 @dataclasses.dataclass
 class Config:
     seed: int = dataclasses.field(default=21)
-    wandb: Optional[str] = dataclasses.field(default=None)
-    data_config: DataConfig = dataclasses.field(default_factory=DataConfig)
-    model_config: ModelConfig = dataclasses.field(default_factory=ModelConfig)
-    experiments_config: ExperimentsConfig = dataclasses.field(
+    data: Optional[DataConfig] = dataclasses.field(default=None)
+    db: Optional[DbConfig] = dataclasses.field(default=None)
+    ansible_pwd: str = dataclasses.field(default="ansible-pwd.txt")
+    model: ModelConfig = dataclasses.field(default_factory=ModelConfig)
+    experiments: ExperimentsConfig = dataclasses.field(
         default_factory=ExperimentsConfig
     )
+
+
+@dataclasses.dataclass
+class EvalConfig:
+    ansible_pwd: str = dataclasses.field(default="ansible-pwd.txt")
+    db: Optional[DbConfig] = dataclasses.field(default=None)
+    test_data: Optional[str] = dataclasses.field(default=None)
+    model: str = dataclasses.field(default=None)

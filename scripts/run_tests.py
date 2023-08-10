@@ -1,7 +1,7 @@
 import argparse
 import os
+import pickle
 
-import catboost
 import loguru
 import ujson
 
@@ -11,7 +11,7 @@ def _configure_argparser() -> argparse.ArgumentParser:
     argparser.add_argument(
         "--model",
         type=str,
-        default="experiments/latest/model.cbm",
+        default="experiments/latest/model.sklrn",
         help="the binary catboost model file",
     )
     argparser.add_argument(
@@ -24,10 +24,8 @@ def _configure_argparser() -> argparse.ArgumentParser:
 
 
 def main(model: str, tests_dir: str):
-    model = catboost.CatBoostClassifier()
-
-    loguru.logger.info("Loading model from {}", model)
-    model.load_model(model)
+    with open(model, "rb") as model_file:
+        classifier = pickle.load(model_file)
 
     total = 0
     success = 0
@@ -42,7 +40,7 @@ def main(model: str, tests_dir: str):
                 features = [list(id2value.values()) for id2value in tests["X"]]
                 targets = [list(id2value.values()) for id2value in tests["y"]]
 
-                predictions = model.predict(features)
+                predictions = classifier.predict(features)
 
                 for i in range(len(features)):
                     loguru.logger.info("TEST {} | features: {}", i, features[i])

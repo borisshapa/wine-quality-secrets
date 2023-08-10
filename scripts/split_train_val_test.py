@@ -2,7 +2,7 @@ import argparse
 import os.path
 
 import loguru
-import pandas as pd
+import numpy as np
 
 from src import utils
 
@@ -37,33 +37,34 @@ def _configure_argparser() -> argparse.ArgumentParser:
     return argparser
 
 
-def main(data: str, val_ratio: float, test_ratio: float, seed: int):
-    dataframes = []
+def main(data: list[str], val_ratio: float, test_ratio: float, seed: int):
+    utils.set_deterministic_mode(seed)
+
+    _x, _y, header = [], [], []
 
     for ind, filename in enumerate(data):
         loguru.logger.info("Reading file {} | wine type: {}", filename, ind)
 
-        dataframe = pd.read_csv(filename, sep=utils.CSV_SEPARATOR)
-        dataframe.insert(0, utils.WINE_TYPE_COLUMN_NAME, [ind] * dataframe.shape[0])
-        dataframes.append(dataframe)
+        x, y, header = utils.load_data_from_csv(filename, sep=utils.CSV_SEPARATOR)
+        type_column = np.repeat(np.float32(ind), len(y))
+        _x.append(np.column_stack((type_column, x)))
+        _y.append(y)
 
-    data = pd.concat(dataframes, ignore_index=True)
-    shuffled_data = data.sample(frac=1, ignore_index=True)
+    header = ["wine type"] + header
+    x, y = np.concatenate(_x), np.concatenate(_y)
 
-    partition = utils.split_into_train_val_test(
-        shuffled_data, val_ratio, test_ratio, seed
-    )
+    partition = utils.split_into_train_val_test(x, y, val_ratio, test_ratio)
 
     dirname = os.path.dirname(data[-1])
-    for group_name, data in partition.items():
+    for group_name, (x, y) in partition.items():
         filename = os.path.join(dirname, f"{group_name}.csv")
         loguru.logger.info(
             "Saving {} into {} | dataset size: {}",
             group_name,
             filename,
-            len(data.index),
+            len(y),
         )
-        data.to_csv(filename, sep=utils.CSV_SEPARATOR, index=False)
+        utils.save_csv(header, x, y, filename, utils.CSV_SEPARATOR)
 
 
 if __name__ == "__main__":
