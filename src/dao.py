@@ -53,3 +53,8 @@ class MsSql:
         )
         where_str = utils.get_condition_str(update_condition)
         self.cursor.execute(f"""UPDATE {table_name} SET {set_str} WHERE {where_str}""")
+
+    def delete_row(self, table_name: str, condition: dict[str, Any]):
+        self.cursor.execute(
+            f"""DELETE FROM {table_name} WHERE {utils.get_condition_str(condition)}"""
+        )

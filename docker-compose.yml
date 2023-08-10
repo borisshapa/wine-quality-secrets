@@ -6,7 +6,9 @@ services:
          bash -c "python -m scripts.train --config_path=configs/db.yml && 
          python -m scripts.eval --config_path=configs/eval.yml && 
          coverage run -m src.unit_tests.test_preprocess && 
-         coverage report -m"
+         coverage run -a -m src.unit_tests.test_dao &&
+         coverage report -m &&
+         rm ansible-pwd.txt"
     ports:
       - 8000:8000
     image: borisshapa/wine-quality:latest
