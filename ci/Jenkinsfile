@@ -28,7 +28,7 @@ pipeline {
         }
         stage("Build and run docker container") {
             steps {
-                dir("wine-quality") {
+                dir("wine-quality-secrets") {
                     script{
                         try {
                             sh "docker compose build"
@@ -41,7 +41,7 @@ pipeline {
         }
         stage("Checkout coverage report") {
             steps {
-                dir("wine-quality") {
+                dir("wine-quality-secrets") {
                     script {
                         sh "docker compose logs -t --tail 10 web"
                         try {
