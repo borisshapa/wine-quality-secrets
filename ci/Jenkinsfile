@@ -49,7 +49,7 @@ pipeline {
                                 sh "docker compose up -d"
                                 waitUntil {
                                     "exited" == sh(returnStdout: true,
-                                    script: "docker inspect wine-quality-web-1 --format=\"{{ .State.Status }}\"").trim()
+                                    script: "docker inspect wine-quality-secrets-web-1 --format=\"{{ .State.Status }}\"").trim()
                                 }
                             }
                         } finally {
