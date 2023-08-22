@@ -3,26 +3,24 @@ services:
   web:
     build: .
     command: ./sh_scripts/wait_for_it.sh -t 40 mssql:1433 -- 
-         bash -c "python -m scripts.train --config_path=configs/db.yml && 
-         python -m scripts.eval --config_path=configs/eval.yml && 
-         coverage run -m src.unit_tests.test_preprocess && 
-         coverage run -a -m src.unit_tests.test_dao &&
-         coverage report -m &&
+         bash -c "python -m scripts.init_db --config_path=configs/init.yml && \
+         python -m scripts.train --config_path=configs/db.yml && \
+         python -m scripts.eval --config_path=configs/eval.yml && \
+         coverage run -m src.unit_tests.test_preprocess && \
+         coverage run -a -m src.unit_tests.test_dao && \
+         coverage report -m && \
          rm ansible-pwd.txt"
     ports:
       - 8000:8000
     image: borisshapa/wine-quality:latest
-    volumes:
-      - ./scripts:/app/scripts
-      - ./src:/app/src
-      - ./configs:/app/configs
     depends_on:
       - mssql
+
   mssql:
-    build:
-      dockerfile: mssql.dockerfile
-      context: .
+    image: mcr.microsoft.com/mssql/server
     ports:
       - "1433:1433"
-    volumes:
-      - ./data:/data
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=${MSSQL_PWD}
+      - USER_ID=${MSSQL_UID}
