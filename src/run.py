@@ -6,7 +6,8 @@ import pyodbc
 import loguru
 from sklearn import ensemble, metrics
 
-from src import utils, configs, secrets, dao
+from src import configs
+from src.utils import dao, secrets, common
 
 
 def _initialize_db(ansible_pwd: str, db_config: configs.DbConfig) -> dao.MsSql:
@@ -18,7 +19,7 @@ def _initialize_db(ansible_pwd: str, db_config: configs.DbConfig) -> dao.MsSql:
 
 
 def train(config: configs.Config):
-    utils.set_deterministic_mode(config.seed)
+    common.set_deterministic_mode(config.seed)
 
     data_config = config.data
     db_config = config.db
@@ -32,19 +33,19 @@ def train(config: configs.Config):
 
     elif data_config is not None:
         loguru.logger.info("Loading train data from {}", data_config.train_data)
-        x_train, y_train, _ = utils.load_data_from_csv(
-            data_config.train_data, sep=utils.CSV_SEPARATOR
+        x_train, y_train, _ = common.load_data_from_csv(
+            data_config.train_data, sep=common.CSV_SEPARATOR
         )
 
         loguru.logger.info("Loading val data from {}", data_config.val_data)
-        x_val, y_val, _ = utils.load_data_from_csv(
-            data_config.val_data, sep=utils.CSV_SEPARATOR
+        x_val, y_val, _ = common.load_data_from_csv(
+            data_config.val_data, sep=common.CSV_SEPARATOR
         )
     else:
         raise ValueError("Please specify either data_config or db_config")
 
     train_dir = os.path.join(
-        experiments_config.dir, experiments_config.save_to or utils.get_current_time()
+        experiments_config.dir, experiments_config.save_to or common.get_current_time()
     )
     if not os.path.exists(train_dir):
         os.makedirs(train_dir)
@@ -81,7 +82,7 @@ def eval(config: configs.EvalConfig):
         x, y = db.get_data(db_config.data_table, {"data group": "'test'"})
     elif config.test_data is not None:
         loguru.logger.info("Loading data from {}", config.test_data)
-        x, y, _ = utils.load_data_from_csv(config.test_data, sep=utils.CSV_SEPARATOR)
+        x, y, _ = common.load_data_from_csv(config.test_data, sep=utils.CSV_SEPARATOR)
     else:
         raise ValueError("Please specify either db config or test-data path")
 

@@ -14,6 +14,5 @@ def main(config: configs.ClearDbConfig):
         sql.delete(table_name, {})
 
 
-
 if __name__ == "__main__":
     main()

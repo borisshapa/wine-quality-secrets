@@ -15,6 +15,7 @@ class ModelConfig:
 class DataConfig:
     train_data: str = dataclasses.field(default="data/train.csv")
     val_data: str = dataclasses.field(default="data/val.csv")
+    test_data: str = dataclasses.field(default="data/test.csv")
 
 
 @dataclasses.dataclass
