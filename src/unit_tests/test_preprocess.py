@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 
-from src import utils
+from src.utils import common
 
 
 class TestPreprocessing(unittest.TestCase):
@@ -17,7 +17,7 @@ class TestPreprocessing(unittest.TestCase):
         val_ratio = 0.2
         test_ratio = 0.5
 
-        partition = utils.split_into_train_val_test(
+        partition = common.split_into_train_val_test(
             self.x, self.y, val_ratio, test_ratio
         )
 

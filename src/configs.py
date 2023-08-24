@@ -15,6 +15,7 @@ class ModelConfig:
 class DataConfig:
     train_data: str = dataclasses.field(default="data/train.csv")
     val_data: str = dataclasses.field(default="data/val.csv")
+    test_data: str = dataclasses.field(default="data/test.csv")
 
 
 @dataclasses.dataclass
@@ -48,3 +49,17 @@ class EvalConfig:
     db: Optional[DbConfig] = dataclasses.field(default=None)
     test_data: Optional[str] = dataclasses.field(default=None)
     model: str = dataclasses.field(default=None)
+
+
+@dataclasses.dataclass
+class InitDbConfig:
+    ansible_pwd: str = dataclasses.field(default="ansible-pwd.txt")
+    db: DbConfig = dataclasses.field(default_factory=DbConfig)
+    data: DataConfig = dataclasses.field(default_factory=DataConfig)
+    init_file: str = dataclasses.field(default="create_db.sql")
+
+
+@dataclasses.dataclass
+class ClearDbConfig:
+    ansible_pwd: str = dataclasses.field(default="ansible-pwd.txt")
+    db: DbConfig = dataclasses.field(default_factory=DbConfig)
