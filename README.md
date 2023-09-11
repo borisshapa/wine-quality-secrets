@@ -94,10 +94,10 @@ The credentials to access the database must be encrypted using [ansible-vault](h
 
 Put the database data in a yaml file in the following format:
 ```shell
-server: mssql,1433
-nuid: sa
-pwd: password
-database: wines
+server: "mssql,1433"
+nuid: "sa"
+pwd: "password"
+database: "wines"
 ```
 
 Put the ansible password into the txt file. Use 
