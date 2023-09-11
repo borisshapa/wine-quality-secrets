@@ -2,7 +2,7 @@ version: "3.10"
 services:
   web:
     build: .
-    command: ./sh_scripts/wait_for_it.sh -t 40 mssql:1433 -- 
+    command: ./sh_scripts/wait_for_it.sh -t 60 mssql:1433 -- 
          bash -c "python -m scripts.init_db --config_path=configs/init.yml && \
          python -m scripts.train --config_path=configs/db.yml && \
          python -m scripts.eval --config_path=configs/eval.yml && \
@@ -18,10 +18,8 @@ services:
       - mssql
 
   mssql:
-    image: mcr.microsoft.com/mssql/server
+    build:
+      context: .
+      dockerfile: mssql.dockerfile
     ports:
       - "1433:1433"
-    environment:
-      - ACCEPT_EULA=Y
-      - MSSQL_SA_PASSWORD=${MSSQL_PWD}
-      - USER_ID=${MSSQL_UID}
