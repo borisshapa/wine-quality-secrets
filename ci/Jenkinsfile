@@ -23,7 +23,7 @@ pipeline {
         stage("Clone github repository") {
             steps {
                 cleanWs()
-                sh "git clone -b $GIT_BRANCH https://${GITHUB_ACCESS_TOKEN}@github.com/borisshapa/wine-quality-secrets"
+                sh "git clone -b ${GIT_BRANCH:-master} https://${GITHUB_ACCESS_TOKEN}@github.com/borisshapa/wine-quality-secrets"
             }
         }
         stage("Login") {
